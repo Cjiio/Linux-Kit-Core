@@ -2679,7 +2679,8 @@ static int sw42000_probe(struct device *dev)
 #endif
 	// pm_qos_add_request(&d->pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
 	// 		PM_QOS_DEFAULT_VALUE);
-	cpu_latency_qos_add_request(&d->pm_qos_req, PM_QOS_DEFAULT_VALUE);
+	// cpu_latency_qos_add_request(&d->pm_qos_req, PM_QOS_DEFAULT_VALUE);
+	dev_pm_qos_add_request(&d->dev, &d->pm_qos_req, DEV_PM_QOS_RESUME_LATENCY, PM_QOS_DEFAULT_VALUE);
 
 	d->lcd_mode = LCD_MODE_U3;
 	d->lpwg_failreason_ctrl = LPWG_FAILREASON_ENABLE;
@@ -2695,7 +2696,8 @@ static int sw42000_remove(struct device *dev)
 	struct sw42000_data *d = to_sw42000_data(dev);
 
 	// pm_qos_remove_request(&d->pm_qos_req);
-	cpu_latency_qos_remove_request(&d->pm_qos_req);
+	// cpu_latency_qos_remove_request(&d->pm_qos_req);
+	dev_pm_qos_remove_request(&d->pm_qos_req);
 
 	sw42000_free_locks(d);
 	sw42000_free_works(d);
@@ -2726,7 +2728,8 @@ static int sw42000_shutdown(struct device *dev)
 	TOUCH_TRACE();
 
 	// pm_qos_remove_request(&d->pm_qos_req);
-	cpu_latency_qos_remove_request(&d->pm_qos_req);
+	// cpu_latency_qos_remove_request(&d->pm_qos_req);
+	dev_pm_qos_remove_request(&d->pm_qos_req);
 
 	return 0;
 }
@@ -4350,7 +4353,8 @@ int sw42000_irq_handler(struct device *dev)
 	int ret = 0;
 
 	// pm_qos_update_request(&d->pm_qos_req, 10);
-	cpu_latency_qos_update_request(&d->pm_qos_req, 10);
+	// cpu_latency_qos_update_request(&d->pm_qos_req, 10);
+	dev_pm_qos_update_request(&d->pm_qos_req, 10);
 	ret = sw42000_reg_read(dev, TC_IC_STATUS, &d->info, sizeof(d->info));
 	if (ret < 0) {
 		TOUCH_E("%s : tc_ic_status read fail\n", __func__);
@@ -4359,7 +4363,8 @@ int sw42000_irq_handler(struct device *dev)
 
 	ret = sw42000_check_status(dev);
 	// pm_qos_update_request(&d->pm_qos_req, PM_QOS_DEFAULT_VALUE);
-	cpu_latency_qos_update_request(&d->pm_qos_req, PM_QOS_DEFAULT_VALUE);
+	// cpu_latency_qos_update_request(&d->pm_qos_req, PM_QOS_DEFAULT_VALUE);
+	dev_pm_qos_update_request(&d->pm_qos_req, PM_QOS_DEFAULT_VALUE);
 
 	d->intr_type = ((d->info.tc_status >> 16) & 0xF);
 	TOUCH_D(ABS, "%s : intr_type: %x\n", __func__, (int)d->intr_type);
